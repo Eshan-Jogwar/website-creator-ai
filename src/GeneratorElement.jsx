@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import generateText from "./CallingOllama";
 
 const EDGE_THRESHOLD = 10; // pixels from edge to trigger resize
 
@@ -103,6 +104,14 @@ const Generator = () => {
     };
   }, [isDragging, isResizing, resizeEdge]);
 
+  useEffect(() => {
+    console.log(
+      generateText("who is goku", "llama3.1").then((responce) =>
+        console.log(responce)
+      )
+    );
+  }, []);
+
   return (
     <div
       ref={boxRef}
@@ -117,7 +126,7 @@ const Generator = () => {
         backgroundColor: "white",
         userSelect: "none",
       }}
-    />
+    ></div>
   );
 };
 
