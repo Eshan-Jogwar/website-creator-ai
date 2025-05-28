@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
 import "./Layout.css";
 import useDeviceProperties from "./useDeviceProperties";
+import useGeneratorStore from "./useGeneratorStore";
 import Generator from "./GeneratorElement";
 const MainArea = () => {
   const { zoom, setZoom, width, setWidth, height, setHeight } =
     useDeviceProperties();
+  const { GeneratorID, addGenerators, getGenerator } = useGeneratorStore();
   const canvasWrapperRef = useRef(null);
 
   const isPanning = useRef(false);
@@ -95,6 +97,7 @@ const MainArea = () => {
               onChange={(e) => setHeight(Number(e.target.value))}
             />
           </label>
+          <button onClick={() => addGenerators()}>Add Generator</button>
         </div>
       </div>
 
@@ -110,7 +113,9 @@ const MainArea = () => {
           <div
             style={{ position: "relative", height: "100vh", width: "100vw" }}
           >
-            <Generator />
+            {GeneratorID.map((id) => {
+              return getGenerator(id);
+            })}
           </div>
         </div>
       </div>
