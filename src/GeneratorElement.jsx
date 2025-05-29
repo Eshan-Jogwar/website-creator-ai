@@ -3,6 +3,21 @@ import generateText from "./CallingOllama";
 
 const EDGE_THRESHOLD = 10; // pixels from edge to trigger resize
 
+const ParsingHtmlFunction = ({ innerHtmlInput }) => {
+  const [innerHtml, setInnerHtml] = useState("hello world");
+  const holderRef = useRef();
+  useEffect(() => {
+    setInnerHtml(innerHtmlInput);
+  }, []);
+
+  useEffect(() => {
+    console.log();
+    holderRef.current.innerHTML = innerHtml;
+  }, [innerHtml]);
+
+  return <div ref={holderRef}>{innerHtml}</div>;
+};
+
 const Generator = () => {
   const boxRef = useRef(null);
   const containerRef = useRef(null);
@@ -13,7 +28,8 @@ const Generator = () => {
   const [isResizing, setIsResizing] = useState(false);
   const [resizeEdge, setResizeEdge] = useState(null);
   const offsetRef = useRef({ x: 0, y: 0 });
-
+  const [code, setCode] = useState("");
+  const [generating, setGenerating] = useState(false);
   useEffect(() => {
     containerRef.current = boxRef.current?.parentNode;
   }, []);
@@ -104,14 +120,6 @@ const Generator = () => {
     };
   }, [isDragging, isResizing, resizeEdge]);
 
-  useEffect(() => {
-    console.log(
-      generateText("who is goku", "llama3.1").then((responce) =>
-        console.log(responce)
-      )
-    );
-  }, []);
-
   return (
     <div
       ref={boxRef}
@@ -126,7 +134,33 @@ const Generator = () => {
         backgroundColor: "white",
         userSelect: "none",
       }}
-    ></div>
+    >
+      <button
+        onClick={() => {
+          console.log("generating please wait");
+          setGenerating(true);
+          generateText(
+            "generate code for a minimilistic button the colors to use are purple and blue and give it a great font" +
+              "only give the html of what would go inside the return statement nothing else. no other words or explaination just code. use only inline plain css though the style attribute. do not use tailwind and do not use bootstrap",
+            "llama3.1"
+          ).then((elem) => {
+            setCode(elem);
+            console.log("hello world");
+            console.log(elem);
+            setGenerating(false);
+          });
+        }}
+      >
+        click to generateText
+      </button>
+      {generating ? (
+        "Generating..."
+      ) : (
+        <ParsingHtmlFunction
+          innerHtmlInput={code.replace("html", "").split("```")[1]}
+        />
+      )}
+    </div>
   );
 };
 
