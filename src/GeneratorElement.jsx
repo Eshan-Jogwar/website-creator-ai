@@ -1,35 +1,39 @@
 import { useRef, useState, useEffect } from "react";
+import useGeneratorStore from "./useGeneratorStore"; // import the store
 import generateText from "./CallingOllama";
 
-const EDGE_THRESHOLD = 10; // pixels from edge to trigger resize
+const EDGE_THRESHOLD = 10;
 
 const ParsingHtmlFunction = ({ innerHtmlInput }) => {
   const [innerHtml, setInnerHtml] = useState("hello world");
   const holderRef = useRef();
+
   useEffect(() => {
     setInnerHtml(innerHtmlInput);
   }, []);
 
   useEffect(() => {
-    console.log();
-    holderRef.current.innerHTML = innerHtml;
+    if (holderRef.current) {
+      holderRef.current.innerHTML = innerHtml;
+    }
   }, [innerHtml]);
 
   return <div ref={holderRef}>{innerHtml}</div>;
 };
 
-const Generator = () => {
+const Generator = ({ _generatorId }) => {
   const boxRef = useRef(null);
   const containerRef = useRef(null);
   const [position, setPosition] = useState({ left: 100, top: 100 });
   const [size, setSize] = useState({ width: 200, height: 200 });
-
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [resizeEdge, setResizeEdge] = useState(null);
   const offsetRef = useRef({ x: 0, y: 0 });
-  const [code, setCode] = useState("");
   const [generating, setGenerating] = useState(false);
+
+  const { setGeneratorSelected, getGeneratorName } = useGeneratorStore(); // ✅ Get the setter from store
+
   useEffect(() => {
     containerRef.current = boxRef.current?.parentNode;
   }, []);
@@ -120,9 +124,24 @@ const Generator = () => {
     };
   }, [isDragging, isResizing, resizeEdge]);
 
+  const handleGeneratingStuff = () => {
+    setGenerating(true);
+    generateText(
+      "generate a good looking html table of 4 x 5 columns only give the html of what would go inside the return statement nothing else. no other words or explanation just code. use only inline plain css though the style attribute. do not use tailwind and do not use bootstrap",
+      "llama3.1"
+    ).then((elem) => {
+      setGenerating(false);
+    });
+  };
+
+  const handleClick = () => {
+    setGeneratorSelected(_generatorId); // ✅ Set selected generator on click
+  };
+
   return (
     <div
       ref={boxRef}
+      onClick={handleClick}
       onMouseDown={handleMouseDown}
       style={{
         position: "absolute",
@@ -135,31 +154,7 @@ const Generator = () => {
         userSelect: "none",
       }}
     >
-      <button
-        onClick={() => {
-          console.log("generating please wait");
-          setGenerating(true);
-          generateText(
-            "generate code for a minimilistic button the colors to use are purple and blue and give it a great font" +
-              "only give the html of what would go inside the return statement nothing else. no other words or explaination just code. use only inline plain css though the style attribute. do not use tailwind and do not use bootstrap",
-            "llama3.1"
-          ).then((elem) => {
-            setCode(elem);
-            console.log("hello world");
-            console.log(elem);
-            setGenerating(false);
-          });
-        }}
-      >
-        click to generateText
-      </button>
-      {generating ? (
-        "Generating..."
-      ) : (
-        <ParsingHtmlFunction
-          innerHtmlInput={code.replace("html", "").split("```")[1]}
-        />
-      )}
+      {generating ? "Generating...." : ""}
     </div>
   );
 };
