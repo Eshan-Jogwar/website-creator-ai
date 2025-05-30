@@ -3,6 +3,7 @@ import Generator from "./GeneratorElement";
 import { v4 as uuidv4 } from "uuid";
 const Generators = {};
 const GeneratorProperties = {};
+const GeneratorMetaData = {};
 const useGeneratorStore = create((set) => ({
   GeneratorID: [],
   SelectedGeneratorId: null,
@@ -11,8 +12,12 @@ const useGeneratorStore = create((set) => ({
       const Id = uuidv4();
       Generators[Id] = <Generator _generatorId={Id} />;
       GeneratorProperties[Id] = {
-        aiPrompt: "",
+        description: "",
         name: `Generator`,
+      };
+      GeneratorMetaData[Id] = {
+        position: { left: 100, top: 100 },
+        size: { width: 200, height: 200 },
       };
       return { GeneratorID: [...state.GeneratorID, Id] };
     }),
@@ -29,10 +34,17 @@ const useGeneratorStore = create((set) => ({
   setGeneratorProperties: (Id, property, value) => {
     GeneratorProperties[Id][property.toString()] = value;
   },
+  setGeneratorMetaData: (Id, property, value) => {
+    GeneratorMetaData[Id][property.toString()] = value;
+  },
   setGeneratorSelected: (Id) =>
     set((state) => {
       return { SelectedGeneratorId: Id };
     }),
+
+  getPromptData: () => {
+    return { GeneratorProperties, GeneratorMetaData };
+  },
 }));
 
 export default useGeneratorStore;

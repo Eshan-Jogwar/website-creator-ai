@@ -32,7 +32,12 @@ const Generator = ({ _generatorId }) => {
   const offsetRef = useRef({ x: 0, y: 0 });
   const [generating, setGenerating] = useState(false);
 
-  const { setGeneratorSelected, getGeneratorName } = useGeneratorStore(); // ✅ Get the setter from store
+  const {
+    setGeneratorSelected,
+    setGeneratorMetaData,
+    getPromptData,
+    SelectedGeneratorId,
+  } = useGeneratorStore(); // ✅ Get the setter from store
 
   useEffect(() => {
     containerRef.current = boxRef.current?.parentNode;
@@ -138,6 +143,15 @@ const Generator = ({ _generatorId }) => {
     setGeneratorSelected(_generatorId); // ✅ Set selected generator on click
   };
 
+  useEffect(() => {
+    setGeneratorMetaData(_generatorId, "position", position);
+  }, [position]);
+
+  useEffect(() => {
+    setGeneratorMetaData(_generatorId, "size", size);
+    console.log(getPromptData());
+  }, [size]);
+
   return (
     <div
       ref={boxRef}
@@ -149,7 +163,10 @@ const Generator = ({ _generatorId }) => {
         top: `${position.top}px`,
         width: `${size.width}px`,
         height: `${size.height}px`,
-        border: "2px solid black",
+        border:
+          _generatorId == SelectedGeneratorId
+            ? "solid 2px blue"
+            : "solid 2px black",
         backgroundColor: "white",
         userSelect: "none",
       }}

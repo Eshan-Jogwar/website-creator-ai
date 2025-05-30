@@ -2,13 +2,13 @@ import { useEffect, useRef } from "react";
 import "./Layout.css";
 import useDeviceProperties from "./useDeviceProperties";
 import useGeneratorStore from "./useGeneratorStore";
-import Generator from "./GeneratorElement";
+import axios from "axios";
 const MainArea = () => {
   const { zoom, setZoom, width, setWidth, height, setHeight } =
     useDeviceProperties();
   const { GeneratorID, addGenerators, getGenerator } = useGeneratorStore();
   const canvasWrapperRef = useRef(null);
-
+  const { getPromptData } = useGeneratorStore();
   const isPanning = useRef(false);
   const lastMousePos = useRef({ x: 0, y: 0 });
 
@@ -59,6 +59,22 @@ const MainArea = () => {
     };
   }, []);
 
+  const generateAiPrompt = async () => {
+    const promptData = getPromptData();
+    const responce = await axios.post(
+      "http://localhost:5000/api/GenerateWebsite",
+      {
+        promptData: JSON.stringify(promptData),
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(responce);
+  };
+
   return (
     <main className="mainArea">
       <div className="toolbar">
@@ -98,6 +114,7 @@ const MainArea = () => {
             />
           </label>
           <button onClick={() => addGenerators()}>Add Generator</button>
+          <button onClick={() => generateAiPrompt()}>Generate</button>
         </div>
       </div>
 
