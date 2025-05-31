@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./Layout.css";
 import useGeneratorStore from "./useGeneratorStore";
+import axios from "axios";
 
 const PropertyElement = ({ label, value, onChange }) => {
   return (
@@ -22,7 +23,19 @@ const PropertiesPanel = () => {
     SelectedGeneratorId,
   } = useGeneratorStore();
 
-  const [generatorProperties, setGeneratorPropsLocal] = useState({});
+  const [generatorProperties, setGeneratorPropsLocal, getPromptData] = useState(
+    {}
+  );
+
+  const HandleGenerate = async () => {
+    const responce = await axios.post(
+      "http://localhost:5000/api/GenerateWebsite",
+      {
+        promptData: getPromptData(SelectedGeneratorId),
+      }
+    );
+    console.log(responce);
+  };
 
   useEffect(() => {
     if (SelectedGeneratorId) {
@@ -59,8 +72,9 @@ const PropertiesPanel = () => {
           border: "none",
           cursor: "pointer",
         }}
+        onClick={() => HandleGenerate()}
       >
-        Click Me
+        Generate Element
       </button>
     </aside>
   );

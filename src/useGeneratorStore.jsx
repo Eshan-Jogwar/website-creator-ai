@@ -42,8 +42,14 @@ const useGeneratorStore = create((set) => ({
       return { SelectedGeneratorId: Id };
     }),
 
-  getPromptData: () => {
-    return { GeneratorProperties, GeneratorMetaData };
+  getPromptData: (Id) => {
+    return {
+      x: GeneratorMetaData[Id].position.left,
+      y: GeneratorMetaData[Id].position.top,
+      height: GeneratorMetaData[Id].size.height,
+      width: GeneratorMetaData[Id].size.width,
+      description: GeneratorProperties[Id].description,
+    };
   },
 }));
 

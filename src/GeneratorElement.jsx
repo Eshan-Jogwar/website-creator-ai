@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from "react";
 import useGeneratorStore from "./useGeneratorStore"; // import the store
-import generateText from "./CallingOllama";
 
 const EDGE_THRESHOLD = 10;
 
@@ -128,16 +127,6 @@ const Generator = ({ _generatorId }) => {
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isDragging, isResizing, resizeEdge]);
-
-  const handleGeneratingStuff = () => {
-    setGenerating(true);
-    generateText(
-      "generate a good looking html table of 4 x 5 columns only give the html of what would go inside the return statement nothing else. no other words or explanation just code. use only inline plain css though the style attribute. do not use tailwind and do not use bootstrap",
-      "llama3.1"
-    ).then((elem) => {
-      setGenerating(false);
-    });
-  };
 
   const handleClick = () => {
     setGeneratorSelected(_generatorId); // ✅ Set selected generator on click
